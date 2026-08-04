@@ -6,3 +6,35 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum FlashcardLevel {
+  Red
+  Orange
+  Pink
+  Yellow
+  LightBlue
+  Blue
+  Lime
+  Green
+  DarkGreen
+  Turquoise
+  Indigo
+  Purple
+}
+
+model FlashcardPack {
+  id    Int             @id @default(autoincrement())
+  level FlashcardLevel
+  type  Int?
+  pairs FlashcardPair[]
+
+  @@unique([level, type])
+}
+
+model FlashcardPair {
+  id      Int           @id @default(autoincrement())
+  hebrew  String
+  english String
+  packId  Int
+  pack    FlashcardPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+}
