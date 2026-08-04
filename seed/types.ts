@@ -1,4 +1,4 @@
-import type { FlashcardLevel } from '@prisma/client';
+import type { FlashcardLevel } from "@prisma/client";
 
 type FlashcardType = 1 | 2 | 3 | 4 | 5 | 6;
 

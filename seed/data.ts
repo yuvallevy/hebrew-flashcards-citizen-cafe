@@ -1,4 +1,4 @@
-import type { FlashcardPack } from './types';
+import type { FlashcardPack } from "./types";
 
 export const flashcardPacks: FlashcardPack[] = [
   // ---------- Tier: Foundation ----------
