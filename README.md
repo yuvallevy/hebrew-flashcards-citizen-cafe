@@ -14,7 +14,7 @@ Run `npx prisma db seed` from the project root to seed the database with the fla
 
 ## Frontend
 
-The frontend is a Next.js app that fetches directly from the backend using Prisma.
+The frontend is a Next.js app that fetches information from the database using Prisma.
 
 **Design choice: fetch all at once vs. fetch on demand.** Since the total size is small here, I decided to fetch all the flashcard packs at once, saving on back-and-forth overhead against the backend. This would not have scaled well to larger datasets; with a larger dataset, I would have fetched each pack of flashcards as needed and cached them in the frontend for subsequent use.
 
