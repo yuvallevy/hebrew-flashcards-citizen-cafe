@@ -22,6 +22,8 @@ export function FlashcardViewer({ packs }: { packs: PackWithPairs[] }) {
   const [shuffledPairs, setShuffledPairs] = useState<FlashcardPair[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  // Slightly hacky way to know when the flipping animation should be skipped
+  const [skipFlipAnimation, setSkipFlipAnimation] = useState(false);
 
   const tier = selection.tier ? (TIERS.find((t) => t.name === selection.tier) ?? null) : null;
   const levelPacks = selection.level ? packs.filter((p) => p.level === selection.level) : [];
@@ -60,13 +62,21 @@ export function FlashcardViewer({ packs }: { packs: PackWithPairs[] }) {
   function reshuffle() {
     setShuffledPairs(selectedPack ? shuffle(selectedPack.pairs) : []);
     setCurrentIndex(0);
+    // Skip the flip animation when reshuffling, so the user doesn't see the card flip back to the front before the next card is shown.
+    setSkipFlipAnimation(true);
     setRevealed(false);
   }
 
   function next() {
     if (shuffledPairs.length === 0) return;
     setCurrentIndex((i) => (i + 1) % shuffledPairs.length);
+    setSkipFlipAnimation(true);
     setRevealed(false);
+  }
+
+  function toggleRevealed() {
+    setSkipFlipAnimation(false);
+    setRevealed((r) => !r);
   }
 
   if (packs.length === 0) {
@@ -114,15 +124,32 @@ export function FlashcardViewer({ packs }: { packs: PackWithPairs[] }) {
       </div>
 
       {currentPair && (
-        <button
-          className="flex h-48 w-80 flex-col items-center justify-center gap-2 rounded-md rounded-br-signature border border-border-subtle bg-surface-raised text-center text-2xl transition hover:border-ink-muted hover:-translate-y-0.5"
-          onClick={() => setRevealed((r) => !r)}
-        >
-          <div className="font-brand" lang="he" dir="rtl">
-            {currentPair.hebrew}
-          </div>
-          {revealed && <div className="text-lg text-ink-muted">{currentPair.english}</div>}
-        </button>
+        <div className="group relative h-48 w-80 [perspective:1000px] transition-transform hover:-translate-y-0.5">
+          <button
+            type="button"
+            className={`relative h-full w-full [transform-style:preserve-3d] ease-out ${
+              skipFlipAnimation ? "duration-0" : "transition-transform duration-[420ms]"
+            }`}
+            style={{ transform: revealed ? "rotateY(180deg)" : undefined }}
+            onClick={toggleRevealed}
+          >
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-md border border-border-subtle bg-surface-raised text-center text-2xl [backface-visibility:hidden] group-hover:border-ink-muted">
+              <div className="font-brand" lang="he" dir="rtl">
+                {currentPair.hebrew}
+              </div>
+            </div>
+
+            <div
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-md border border-border-subtle bg-surface-raised text-center text-2xl [backface-visibility:hidden] group-hover:border-ink-muted"
+              style={{ transform: "rotateY(180deg)" }}
+            >
+              <div className="font-brand" lang="he" dir="rtl">
+                {currentPair.hebrew}
+              </div>
+              <div className="text-lg text-ink-muted">{currentPair.english}</div>
+            </div>
+          </button>
+        </div>
       )}
 
       {selectedPack && (
