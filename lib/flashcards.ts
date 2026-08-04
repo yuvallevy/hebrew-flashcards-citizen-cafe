@@ -11,6 +11,24 @@ export const TIERS: { name: string; levels: FlashcardLevel[] }[] = [
 ];
 
 /**
+ * Swatch color shown next to each level in the level picker.
+ */
+export const LEVEL_COLORS: Record<FlashcardLevel, string> = {
+  Red: "rgb(239, 68, 68)",
+  Orange: "rgb(249, 115, 22)",
+  Pink: "rgb(236, 72, 153)",
+  Yellow: "rgb(234, 179, 8)",
+  LightBlue: "rgb(125, 211, 252)",
+  Blue: "rgb(59, 130, 246)",
+  Lime: "rgb(132, 204, 22)",
+  Green: "rgb(34, 197, 94)",
+  DarkGreen: "rgb(22, 101, 52)",
+  Turquoise: "rgb(13, 148, 136)",
+  Indigo: "rgb(99, 102, 241)",
+  Purple: "rgb(168, 85, 247)",
+};
+
+/**
  * Formats a PascalCase string in Title Case.
  * Used for displaying flashcard levels in a more friendly format.
  */

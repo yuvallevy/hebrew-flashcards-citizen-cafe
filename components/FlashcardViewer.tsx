@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type { FlashcardLevel, FlashcardPack, FlashcardPair } from "@prisma/client";
-import { TIERS, shuffle, titleCase } from "@/lib/flashcards";
+import { LEVEL_COLORS, TIERS, shuffle, titleCase } from "@/lib/flashcards";
+import { Select } from "@/components/Select";
 
 type PackWithPairs = FlashcardPack & { pairs: FlashcardPair[] };
 
@@ -69,85 +70,80 @@ export function FlashcardViewer({ packs }: { packs: PackWithPairs[] }) {
   }
 
   if (packs.length === 0) {
-    return <p className="p-8">No flashcard packs found. Did you run the seed script?</p>;
+    return (
+      <p className="p-8 text-ink-muted">No flashcard packs found. Did you run the seed script?</p>
+    );
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6 p-8">
-      <div className="flex gap-4">
-        <select
-          className="rounded border px-3 py-2"
-          value={selection.tier ?? ""}
-          onChange={(e) => selectTier(e.target.value)}
-        >
-          <option value="" disabled>
-            Select a tier
-          </option>
-          {TIERS.map((t) => (
-            <option key={t.name} value={t.name}>
-              {t.name}
-            </option>
-          ))}
-        </select>
+    <div className="flex flex-1 flex-col items-center gap-8 bg-surface-base p-8">
+      <h1 className="font-brand text-3xl text-ink">Hebrew Flashcards</h1>
+
+      <div className="flex flex-wrap justify-center gap-4">
+        <Select
+          value={selection.tier}
+          onChange={selectTier}
+          placeholder="Select a tier"
+          options={TIERS.map((t) => ({ value: t.name, label: t.name }))}
+        />
 
         {tier && (
-          <select
-            className="rounded border px-3 py-2"
-            value={selection.level ?? ""}
-            onChange={(e) => selectLevel(e.target.value as FlashcardLevel)}
-          >
-            <option value="" disabled>
-              Select a level
-            </option>
-            {tier.levels.map((level) => (
-              <option key={level} value={level}>
-                {titleCase(level)}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={selection.level}
+            onChange={selectLevel}
+            placeholder="Select a level"
+            options={tier.levels.map((level) => ({
+              value: level,
+              label: titleCase(level),
+              color: LEVEL_COLORS[level],
+            }))}
+          />
         )}
 
         {needsType && (
-          <select
-            className="rounded border px-3 py-2"
-            value={selection.type_ ?? ""}
-            onChange={(e) => selectType(Number(e.target.value))}
-          >
-            <option value="" disabled>
-              Select a type
-            </option>
-            {levelPacks.map((pack) => (
-              <option key={pack.type} value={pack.type ?? ""}>
-                Type {pack.type}
-              </option>
-            ))}
-          </select>
+          <Select
+            value={selection.type_}
+            onChange={selectType}
+            placeholder="Select a type"
+            options={levelPacks.map((pack) => ({
+              value: pack.type ?? 0,
+              label: `Type ${pack.type}`,
+            }))}
+          />
         )}
       </div>
 
       {currentPair && (
         <button
-          className="flex h-48 w-80 flex-col items-center justify-center gap-2 rounded-lg border text-center text-2xl"
+          className="flex h-48 w-80 flex-col items-center justify-center gap-2 rounded-md rounded-br-signature border border-border-subtle bg-surface-raised text-center text-2xl transition hover:border-ink-muted hover:-translate-y-0.5"
           onClick={() => setRevealed((r) => !r)}
         >
-          <div lang="he" dir="rtl">{currentPair.hebrew}</div>
-          {revealed && <div className="text-lg text-zinc-500">{currentPair.english}</div>}
+          <div className="font-brand" lang="he" dir="rtl">
+            {currentPair.hebrew}
+          </div>
+          {revealed && <div className="text-lg text-ink-muted">{currentPair.english}</div>}
         </button>
       )}
 
       {selectedPack && (
         <>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-ink-muted">
             {shuffledPairs.length === 0
               ? "No cards in this pack."
               : `${currentIndex + 1} / ${shuffledPairs.length}`}
           </p>
 
           <div className="flex gap-4">
-            <button className="rounded border px-4 py-2" onClick={reshuffle}>
+            <button
+              className="rounded-md border border-border-subtle px-4 py-2 font-medium text-ink transition hover:border-ink-muted"
+              onClick={reshuffle}
+            >
               Shuffle
             </button>
-            <button className="rounded border px-4 py-2" onClick={next}>
+            <button
+              className="rounded-md bg-brand-yellow px-4 py-2 font-medium text-brand-charcoal transition hover:brightness-95"
+              onClick={next}
+            >
               Next
             </button>
           </div>
