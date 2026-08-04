@@ -123,6 +123,10 @@ export function FlashcardViewer({ packs }: { packs: PackWithPairs[] }) {
         )}
       </div>
 
+      {!selectedPack && (
+        <p className="text-ink-muted">Select a tier and a level to get started.</p>
+      )}
+
       {currentPair && (
         <div className="group relative h-48 w-80 [perspective:1000px] transition-transform hover:-translate-y-0.5">
           <button
