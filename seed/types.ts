@@ -1,14 +1,7 @@
-import type { FlashcardLevel } from "@prisma/client";
-
-type FlashcardType = 1 | 2 | 3 | 4 | 5 | 6;
-
-type FlashcardPair = {
-  hebrew: string;
-  english: string;
-};
+import type { FlashcardLevel, Prisma } from "@prisma/client";
 
 export type FlashcardPack = {
   level: FlashcardLevel;
-  type: FlashcardType | null;
-  pairs: FlashcardPair[];
+  type: number | null;
+  pairs: Prisma.FlashcardPairCreateManyPackInput[];
 };
